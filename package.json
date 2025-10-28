@@ -1,0 +1,33 @@
+{
+  "name": "bakend_foodierank",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michelrodriguez05/bakend_FoodieRank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michelrodriguez05/bakend_FoodieRank/issues"
+  },
+  "homepage": "https://github.com/michelrodriguez05/bakend_FoodieRank#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-validator": "^7.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.20.0",
+    "passport-jwt": "^4.0.1",
+    "semver": "^7.7.3",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
