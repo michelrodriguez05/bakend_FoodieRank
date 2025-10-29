@@ -1,39 +1,32 @@
 import express from "express";
 import cors from "cors";
-import rateLimit from "express-rate-limit";
-import dotenv from "dotenv";
-import swaggerUi from "swagger-ui-express";
-import path from "path";
-import { fileURLToPath } from "url";
+import { connectDB } from "./config/db.config.js";
+import { swaggerUi, swaggerSpecs } from "./config/swagger.config.js";
 
-dotenv.config();
+// Importar rutas
+import usuarioRoutes from "./routes/usuario.routes.js";
+import restauranteRoutes from "./routes/restaurante.routes.js";
+import platoRoutes from "./routes/plato.routes.js";
+import reseñaRoutes from "./routes/reseña.routes.js";
+import categoriaRoutes from "./routes/categoria.routes.js";
 
 const app = express();
 
-// Configuración base
-app.use(express.json());
+// Middlewares
 app.use(cors());
+app.use(express.json());
 
-// Limitar peticiones 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Límite de peticiones por IP
-});
-app.use(limiter);
+// Conexión a BD
+connectDB();
 
-//Swagger
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup({}, { explorer: true }));
+// Rutas
+app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/restaurantes", restauranteRoutes);
+app.use("/api/platos", platoRoutes);
+app.use("/api/reseñas", reseñaRoutes);
+app.use("/api/categorias", categoriaRoutes);
 
-//Ruta base temporal para probar
-app.get("/", (req, res) => {
-  res.json({
-    message: "🍔 Bienvenido a FoodieRank API",
-    status: "online",
-  });
-});
+// Swagger
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 export default app;
-
-
