@@ -1,17 +1,13 @@
-import { verificarToken } from "../utils/jwt.js";
-import Usuario from "../models/usuario.model.js";
+import passport from "passport";
+import { estrategiaJwt } from "../config/passport.config.js";
 
-export const protegerRuta = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer "))
-      return res.status(401).json({ mensaje: "Token no proporcionado" });
+passport.use(estrategiaJwt);
 
-    const token = authHeader.split(" ")[1];
-    const decodificado = verificarToken(token);
-    req.usuario = await Usuario.findById(decodificado.id).select("-contraseña");
-    next();
-  } catch (error) {
-    res.status(401).json({ mensaje: "Token inválido o expirado" });
-  }
+export const protegerRuta = passport.authenticate("jwt", { session: false });
+
+export const esAdmin = (req, res, next) => {
+    if (req.user && req.user.rol === "admin") {
+        return next();
+    }
+    return res.status(403).json({ mensaje: "Acceso denegado, se requieren permisos de administrador" });
 };

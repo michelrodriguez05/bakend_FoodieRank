@@ -1,24 +1,40 @@
-import Usuario from "../models/usuario.model.js";
-import { generarToken } from "../utils/jwt.js";
+import bcrypt from "bcrypt";
+import { getDB } from "../config/db.config.js";
+import { ObjectId } from "mongodb";
 
-export const registrarUsuario = async (data) => {
-  const existe = await Usuario.findOne({ correo: data.correo });
-  if (existe) throw new Error("El correo ya está registrado");
+const COLECCION = "usuarios";
 
-  const usuario = new Usuario(data);
-  await usuario.save();
+export async function registrarUsuario(data) {
+    const db = getDB();
+    const { nombre, email, contraseña, rol } = data;
 
-  const token = generarToken(usuario._id, usuario.rol);
-  return { usuario, token };
-};
+    const existe = await db.collection(COLECCION).findOne({ email });
+    if (existe) throw new Error("El correo ya está registrado");
 
-export const loginUsuario = async (correo, contraseña) => {
-  const usuario = await Usuario.findOne({ correo });
-  if (!usuario) throw new Error("Usuario no encontrado");
+    const hash = await bcrypt.hash(contraseña, 10);
+    const nuevo = { nombre, email, contraseña: hash, rol: rol || "usuario" };
 
-  const valido = await usuario.compararContraseña(contraseña);
-  if (!valido) throw new Error("Contraseña incorrecta");
+    await db.collection(COLECCION).insertOne(nuevo);
+    return { mensaje: "Usuario registrado correctamente" };
+}
 
-  const token = generarToken(usuario._id, usuario.rol);
-  return { usuario, token };
-};
+export async function iniciarSesion(email, contraseña) {
+    const db = getDB();
+    const usuario = await db.collection(COLECCION).findOne({ email });
+    if (!usuario) throw new Error("Correo no registrado");
+
+    const coincide = await bcrypt.compare(contraseña, usuario.contraseña);
+    if (!coincide) throw new Error("Contraseña incorrecta");
+
+    return usuario;
+}
+
+export async function obtenerUsuarios() {
+    const db = getDB();
+    return await db.collection(COLECCION).find().toArray();
+}
+
+export async function obtenerUsuarioPorId(id) {
+    const db = getDB();
+    return await db.collection(COLECCION).findOne({ _id: new ObjectId(id) });
+}

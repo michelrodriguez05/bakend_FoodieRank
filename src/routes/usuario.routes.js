@@ -1,19 +1,12 @@
 import { Router } from "express";
-import { registrar, login } from "../controllers/usuario.controller.js";
+import { registro_controller, login_controller, getUsuarios_controller, getUsuario_controller } from "../controllers/usuario.controller.js";
+import { protegerRuta, esAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-/**
- * @swagger
- * /api/usuarios/registro:
- *   post:
- *     summary: Registrar un nuevo usuario
- * /api/usuarios/login:
- *   post:
- *     summary: Iniciar sesión
- */
-
-router.post("/registro", registrar);
-router.post("/login", login);
+router.post("/registro", registro_controller);
+router.post("/login", login_controller);
+router.get("/", protegerRuta, esAdmin, getUsuarios_controller);
+router.get("/:id", protegerRuta, getUsuario_controller);
 
 export default router;

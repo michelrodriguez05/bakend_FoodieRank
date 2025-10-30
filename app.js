@@ -1,32 +1,20 @@
 import express from "express";
 import cors from "cors";
-import { connectDB } from "./config/db.config.js";
-import { swaggerUi, swaggerSpecs } from "./config/swagger.config.js";
-
-// Importar rutas
-import usuarioRoutes from "./routes/usuario.routes.js";
-import restauranteRoutes from "./routes/restaurante.routes.js";
-import platoRoutes from "./routes/plato.routes.js";
-import reseñaRoutes from "./routes/reseña.routes.js";
-import categoriaRoutes from "./routes/categoria.routes.js";
+import rateLimit from "express-rate-limit";
+import passport from "passport";
+import usuarioRoutes from "./src/routes/usuario.routes.js";
+import { swaggerSpecs, swaggerUiSetup } from "./src/config/swagger.config.js";
 
 const app = express();
 
-// Middlewares
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+app.use(passport.initialize());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
-// Conexión a BD
-connectDB();
+app.use(`/api/${process.env.API_VERSION}/usuarios`, usuarioRoutes);
+app.use("/api/docs", swaggerUiSetup.serve, swaggerUiSetup.setup(swaggerSpecs));
 
-// Rutas
-app.use("/api/usuarios", usuarioRoutes);
-app.use("/api/restaurantes", restauranteRoutes);
-app.use("/api/platos", platoRoutes);
-app.use("/api/reseñas", reseñaRoutes);
-app.use("/api/categorias", categoriaRoutes);
-
-// Swagger
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.get("/", (req, res) => res.send("Bienvenido a FoodieRank API 🚀"));
 
 export default app;

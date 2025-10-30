@@ -1,17 +1,22 @@
-import swaggerUi from "swagger-ui-express";
-import swaggerJsDoc from "swagger-jsdoc";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import dotenv from "dotenv";
+import { getDB } from "./db.config.js";
+import { ObjectId } from "mongodb";
+
+dotenv.config();
 
 const opciones = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "API FoodieRank",
-      version: "1.0.0",
-      description: "Documentación del backend de FoodieRank 🍔",
-    },
-  },
-  apis: ["./src/routes/*.js"],
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET
 };
 
-const swaggerSpecs = swaggerJsDoc(opciones);
-export { swaggerUi, swaggerSpecs };
+export const estrategiaJwt = new JwtStrategy(opciones, async (payload, done) => {
+    try {
+        const db = getDB();
+        const usuario = await db.collection("usuarios").findOne({ _id: new ObjectId(payload.id) });
+        if (!usuario) return done(null, false);
+        return done(null, usuario);
+    } catch (error) {
+        return done(error, false);
+    }
+});

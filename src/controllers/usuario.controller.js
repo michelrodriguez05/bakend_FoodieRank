@@ -1,21 +1,41 @@
-import * as usuarioService from "../services/usuario.service.js";
-import { respuestaExitosa, respuestaError } from "../utils/response.js";
+import { generarToken } from "../utils/jwt.js";
+import { registrarUsuario, iniciarSesion, obtenerUsuarios, obtenerUsuarioPorId } from "../services/usuario.service.js";
 
-export const registrar = async (req, res) => {
-  try {
-    const data = await usuarioService.registrarUsuario(req.body);
-    respuestaExitosa(res, data, "Usuario registrado correctamente");
-  } catch (error) {
-    respuestaError(res, error, 400);
-  }
-};
+export async function registro_controller(req, res) {
+    try {
+        const resultado = await registrarUsuario(req.body);
+        res.status(201).json(resultado);
+    } catch (error) {
+        res.status(400).json({ mensaje: error.message });
+    }
+}
 
-export const login = async (req, res) => {
-  try {
-    const { correo, contraseña } = req.body;
-    const data = await usuarioService.loginUsuario(correo, contraseña);
-    respuestaExitosa(res, data, "Inicio de sesión exitoso");
-  } catch (error) {
-    respuestaError(res, error, 400);
-  }
-};
+export async function login_controller(req, res) {
+    try {
+        const { email, contraseña } = req.body;
+        const usuario = await iniciarSesion(email, contraseña);
+        const token = generarToken({ id: usuario._id, rol: usuario.rol });
+        res.status(200).json({ mensaje: "Inicio de sesión exitoso", token });
+    } catch (error) {
+        res.status(401).json({ mensaje: error.message });
+    }
+}
+
+export async function getUsuarios_controller(req, res) {
+    try {
+        const lista = await obtenerUsuarios();
+        res.status(200).json(lista);
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al obtener usuarios", error: error.message });
+    }
+}
+
+export async function getUsuario_controller(req, res) {
+    try {
+        const usuario = await obtenerUsuarioPorId(req.params.id);
+        if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+        res.status(200).json(usuario);
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al obtener usuario", error: error.message });
+    }
+}
