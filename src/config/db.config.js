@@ -1,8 +1,8 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config();
-
-let client;
+const uri = "mongodb://127.0.0.1:27017";
+let client = new MongoClient(uri);
 let db;
 
 export async function connectDB() {
@@ -25,4 +25,13 @@ export function getDB() {
 export function getClient() {
     if (!client) throw new Error("El cliente no está inicializado");
     return client;
+}
+
+export async function closeDB() {
+  try {
+    await client.close();
+    console.log("🔒 Conexión con MongoDB cerrada correctamente.");
+  } catch (error) {
+    console.error("❌ Error al cerrar la conexión:", error);
+  }
 }
