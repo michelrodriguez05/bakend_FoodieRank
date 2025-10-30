@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 import passport from "passport";
 import usuarioRoutes from "./src/routes/usuario.routes.js";
 import { swaggerSpecs, swaggerUiSetup } from "./src/config/swagger.config.js";
+import authRoutes from "./src/routes/auth.routes.js";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
+app.use ("/api/auth", authRoutes);
 app.use(`/api/${process.env.API_VERSION}/usuarios`, usuarioRoutes);
 app.use("/api/docs", swaggerUiSetup.serve, swaggerUiSetup.setup(swaggerSpecs));
 

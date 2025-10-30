@@ -7,17 +7,17 @@ import {
   deleteCategoria_controller,
 } from "../controllers/categoria.controller.js";
 
-import { protegerRuta, esAdmin } from "../middlewares/auth.middleware.js";
 import { validarCategoria } from "../validaciones/categoria.validacion.js";
+import { verificarToken, soloAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 router.get("/", getCategorias_controller);
 router.get("/:id", getCategoria_controller);
 
-// Las operaciones de creación/edición/eliminación solo admin
-router.post("/", protegerRuta, esAdmin, validarCategoria, createCategoria_controller);
-router.put("/:id", protegerRuta, esAdmin, validarCategoria, updateCategoria_controller);
-router.delete("/:id", protegerRuta, esAdmin, deleteCategoria_controller);
+// Las operaciones de creación/edición/eliminación requieren token y solo admin
+router.post("/", verificarToken, soloAdmin, validarCategoria, createCategoria_controller);
+router.put("/:id", verificarToken, soloAdmin, validarCategoria, updateCategoria_controller);
+router.delete("/:id", verificarToken, soloAdmin, deleteCategoria_controller);
 
 export default router;

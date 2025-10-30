@@ -1,13 +1,26 @@
-import passport from "passport";
-import { estrategiaJwt } from "../config/passport.config.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
-passport.use(estrategiaJwt);
+export function verificarToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
 
-export const protegerRuta = passport.authenticate("jwt", { session: false });
+  if (!token) {
+    return res.status(403).json({ message: "Token no proporcionado" });
+  }
 
-export const esAdmin = (req, res, next) => {
-    if (req.user && req.user.rol === "admin") {
-        return next();
-    }
-    return res.status(403).json({ mensaje: "Acceso denegado, se requieren permisos de administrador" });
-};
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Token inválido o expirado" });
+  }
+}
+
+export function soloAdmin(req, res, next) { // This is the actual exported name
+  if (req.user.rol !== "admin") {
+    return res.status(403).json({ message: "Acceso denegado: solo administradores" });
+  }
+  next();
+}
