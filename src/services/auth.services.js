@@ -1,12 +1,13 @@
-// En una aplicación real, aquí te conectarías a tu base de datos.
-// Por ahora, usaremos un arreglo en memoria para simularla.
-const users = [];
+import { getDB } from "../config/db.config.js";
+import bcrypt from "bcrypt";
+import { COLLECTION_USUARIO } from "../models/usuario.model.js";
 
 /**
  * Registra un nuevo usuario.
  * @param {object} data - Datos del usuario (nombre, email, password).
  */
 export async function registrarUsuario(data) {
+  const db = getDB();
   const { email, password, nombre } = data;
 
   // Validación básica
@@ -15,19 +16,25 @@ export async function registrarUsuario(data) {
   }
 
   // Verificar si el usuario ya existe
-  const userExists = users.find(user => user.email === email);
+  const userExists = await db.collection(COLLECTION_USUARIO).findOne({ email });
   if (userExists) {
     throw new Error("El correo electrónico ya está registrado.");
   }
 
-  // En una aplicación real, deberías "hashear" la contraseña antes de guardarla.
-  const newUser = { id: Date.now(), nombre, email, password };
-  users.push(newUser);
+  // Hashear la contraseña antes de guardarla
+  const salt = await bcrypt.genSalt(10);
+  const passwordHashed = await bcrypt.hash(password, salt);
 
-  console.log("Usuario registrado:", newUser);
+  const resultado = await db.collection(COLLECTION_USUARIO).insertOne({
+    nombre,
+    email,
+    password: passwordHashed,
+    rol: "usuario", // Rol por defecto
+    creadoEn: new Date(),
+  });
 
   // No devuelvas la contraseña en la respuesta
-  return { id: newUser.id, nombre: newUser.nombre, email: newUser.email };
+  return { id: resultado.insertedId, nombre, email, rol: "usuario" };
 }
 
 /**
@@ -36,17 +43,19 @@ export async function registrarUsuario(data) {
  * @param {string} password - Contraseña del usuario.
  */
 export async function loginUsuario(email, password) {
+  const db = getDB();
   // Validación básica
   if (!email || !password) {
     throw new Error("Email y contraseña son requeridos.");
   }
 
-  const user = users.find(user => user.email === email);
+  const user = await db.collection(COLLECTION_USUARIO).findOne({ email });
+  if (!user) throw new Error("Credenciales inválidas.");
 
-  // En una aplicación real, compararías la contraseña hasheada.
-  if (!user || user.password !== password) {
-    throw new Error("Credenciales inválidas.");
-  }
+  // Comparar la contraseña proporcionada con la hasheada en la BD
+  const passwordValida = await bcrypt.compare(password, user.password);
+  if (!passwordValida) throw new Error("Credenciales inválidas.");
 
-  return { message: "Login exitoso", userId: user.id };
+  // No devolver la contraseña
+  return { message: "Login exitoso", userId: user._id, nombre: user.nombre, rol: user.rol };
 }

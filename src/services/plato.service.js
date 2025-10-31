@@ -1,12 +1,13 @@
 import { getDB } from "../config/db.config.js";
 import { ObjectId } from "mongodb";
+import { COLLECTION_PLATO } from "../models/plato.model.js";
 
 export async function crearPlato(datos) {
   const db = getDB();
-  const existe = await db.collection("platos").findOne({ nombre: datos.nombre });
+  const existe = await db.collection(COLLECTION_PLATO).findOne({ nombre: datos.nombre, restauranteId: datos.restauranteId });
   if (existe) throw new Error("Ya existe un plato con ese nombre");
 
-  await db.collection("platos").insertOne({
+  await db.collection(COLLECTION_PLATO).insertOne({
     ...datos,
     creadoEn: new Date(),
   });
@@ -16,12 +17,22 @@ export async function crearPlato(datos) {
 
 export async function listarPlatosPorRestaurante(idRestaurante) {
   const db = getDB();
-  const platos = await db.collection("platos").find({ restauranteId: idRestaurante }).toArray();
+  const platos = await db.collection(COLLECTION_PLATO).find({ restauranteId: idRestaurante }).toArray();
   return platos;
+}
+
+export async function actualizarPlato(id, datos) {
+  const db = getDB();
+  const resultado = await db.collection(COLLECTION_PLATO).updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { ...datos, actualizadoEn: new Date() } }
+  );
+  if (resultado.matchedCount === 0) throw new Error("Plato no encontrado para actualizar");
+  return { mensaje: "Plato actualizado correctamente" };
 }
 
 export async function eliminarPlato(id) {
   const db = getDB();
-  await db.collection("platos").deleteOne({ _id: new ObjectId(id) });
+  await db.collection(COLLECTION_PLATO).deleteOne({ _id: new ObjectId(id) });
   return { mensaje: "Plato eliminado correctamente" };
 }

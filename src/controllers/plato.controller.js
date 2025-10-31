@@ -1,9 +1,23 @@
-import { crearPlato, listarPlatosPorRestaurante, eliminarPlato } from "../services/plato.service.js";
+import {
+  crearPlato,
+  listarPlatosPorRestaurante,
+  eliminarPlato,
+  actualizarPlato,
+} from "../services/plato.service.js";
 
 export async function crearPlato_controller(req, res) {
   try {
     const resultado = await crearPlato(req.body);
     res.status(201).json(resultado);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function actualizarPlato_controller(req, res) {
+  try {
+    const resultado = await actualizarPlato(req.params.id, req.body);
+    res.status(200).json(resultado);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
