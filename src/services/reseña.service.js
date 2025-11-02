@@ -33,8 +33,15 @@ export async function listarReseñasPorRestaurante(idRestaurante) {
   return reseñas;
 }
 
-export async function reaccionarReseña(id, tipo) {
+export async function reaccionarReseña(id, tipo, usuarioId) {
   const db = getDB();
+  const reseña = await db.collection(COLLECTION_RESEÑA).findOne({ _id: new ObjectId(id) });
+
+  if (!reseña) throw new Error("Reseña no encontrada");
+  if (reseña.usuarioId.toString() === usuarioId.toString()) {
+    throw new Error("No puedes reaccionar a tu propia reseña");
+  }
+
   const campo = tipo === "like" ? "likes" : "dislikes";
   await db.collection(COLLECTION_RESEÑA).updateOne({ _id: new ObjectId(id) }, { $inc: { [campo]: 1 } });
   return { mensaje: `Reseña ${tipo} agregada` };

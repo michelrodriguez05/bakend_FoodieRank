@@ -1,12 +1,11 @@
 
 import { getDB } from "../config/db.config.js";
-import { COLLECTION_USERS } from "../models/user.model.js";
 import { COLLECTION_USUARIO } from "../models/usuario.model.js";
 import { encriptarPassword, compararPassword } from "../utils/hash.utils.js";
 import { generarToken } from "../utils/jwt.utils.js";
 
 export async function registrarUsuario(data) {
-  const db = await getDB();
+  const db = getDB();
   const { nombre, email, password, rol } = data;
 
   const existente = await db.collection(COLLECTION_USUARIO).findOne({ email });
@@ -18,7 +17,7 @@ export async function registrarUsuario(data) {
     email,
     password: hash,
     rol: rol || "usuario",
-    fechaRegistro: new Date(),
+    creadoEn: new Date(),
   };
 
   await db.collection(COLLECTION_USUARIO).insertOne(nuevoUsuario);
@@ -26,7 +25,7 @@ export async function registrarUsuario(data) {
 }
 
 export async function loginUsuario(email, password) {
-  const db = await getDB();
+  const db = getDB();
   const usuario = await db.collection(COLLECTION_USUARIO).findOne({ email });
 
   if (!usuario) throw new Error("Usuario no encontrado");

@@ -1,13 +1,16 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config();
-const uri = "mongodb://127.0.0.1:27017";
 let client;
 let db;
 
 export async function connectDB() {
     try {
-        client = new MongoClient(process.env.MONGODB_URI || uri);
+        const uri = process.env.MONGODB_URI;
+        if (!uri) {
+            throw new Error("La variable de entorno MONGODB_URI no está definida. Asegúrate de tener un archivo .env");
+        }
+        client = new MongoClient(uri);
         await client.connect();
         db = client.db(process.env.DB_NAME);
         console.log("✅ Conexión a MongoDB establecida correctamente");

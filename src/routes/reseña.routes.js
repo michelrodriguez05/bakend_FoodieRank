@@ -7,7 +7,7 @@ import {
   eliminarReseña_controller,
 } from "../controllers/reseña.controller.js";
 import { verificarToken } from "../middlewares/auth.middleware.js";
-import { validarReseña } from "../validaciones/reseña.validacion.js";
+import { validarReseña } from "../validation/reseña.validacion.js";
 
 const router = Router();
 

@@ -7,7 +7,7 @@ import {
   deleteCategoria_controller,
 } from "../controllers/categoria.controller.js";
 
-import { validarCategoria } from "../validaciones/categoria.validacion.js";
+import { validarCategoria } from "../validation/categoria.validacion.js";
 import { verificarToken, soloAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();

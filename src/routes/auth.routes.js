@@ -6,7 +6,7 @@ import { validarCampos } from "../middlewares/validate.middleware.js";
 const router = Router();
 
 router.post(
-  "/registro",
+  "/register",
   [
     body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
     body("email").isEmail().withMessage("Debe ser un email válido"),

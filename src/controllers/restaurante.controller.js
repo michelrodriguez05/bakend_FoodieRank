@@ -18,7 +18,7 @@ import {
   
   export async function listarRestaurantes_controller(req, res) {
     try {
-      const resultado = await listarRestaurantes();
+      const resultado = await listarRestaurantes(req.query);
       res.status(200).json(resultado);
     } catch (error) {
       res.status(500).json({ error: error.message });

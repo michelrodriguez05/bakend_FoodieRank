@@ -16,9 +16,14 @@ export async function crearRestaurante(datos) {
   return { mensaje: "Restaurante creado, pendiente de aprobación" };
 }
 
-export async function listarRestaurantes() {
+export async function listarRestaurantes(filtros = {}) {
   const db = getDB();
-  const restaurantes = await db.collection(COLLECTION_RESTAURANTE).find().toArray();
+  const query = { aprobado: true }; // Por defecto, solo mostrar restaurantes aprobados
+
+  if (filtros.categoria) {
+    query.categoria = filtros.categoria;
+  }
+  const restaurantes = await db.collection(COLLECTION_RESTAURANTE).find(query).toArray();
   return restaurantes;
 }
 

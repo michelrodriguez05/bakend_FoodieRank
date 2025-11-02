@@ -52,7 +52,7 @@ export async function listarReseñas_controller(req, res) {
 
 export async function reaccionarReseña_controller(req, res) {
   try {
-    const resultado = await reaccionarReseña(req.params.id, req.params.tipo);
+    const resultado = await reaccionarReseña(req.params.id, req.params.tipo, req.user.id);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(400).json({ error: error.message });

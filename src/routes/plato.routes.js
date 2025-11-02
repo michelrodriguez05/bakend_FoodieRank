@@ -6,7 +6,7 @@ import {
   actualizarPlato_controller,
 } from "../controllers/plato.controller.js";
 import { verificarToken } from "../middlewares/auth.middleware.js";
-import { validarPlato } from "../validaciones/plato.validacion.js";
+import { validarPlato } from "../validation/plato.validacion.js";
 
 const router = Router();
 

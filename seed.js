@@ -37,29 +37,29 @@ async function seedData() {
       {
         _id: new ObjectId(),
         nombre: "Burger House",
-        categoría: "Comida rápida",
-        ubicación: "Cra 10 #45-20",
+        categoria: "Comida rápida",
+        ubicacion: "Cra 10 #45-20",
         imagen: "https://example.com/burgerhouse.jpg",
       },
       {
         _id: new ObjectId(),
         nombre: "La Parrilla Gourmet",
-        categoría: "Gourmet",
-        ubicación: "Calle 12 #34-10",
+        categoria: "Gourmet",
+        ubicacion: "Calle 12 #34-10",
         imagen: "https://example.com/parrilla.jpg",
       },
       {
         _id: new ObjectId(),
         nombre: "Green Taste",
-        categoría: "Vegetariana",
-        ubicación: "Av. Los Alpes #22-44",
+        categoria: "Vegetariana",
+        ubicacion: "Av. Los Alpes #22-44",
         imagen: "https://example.com/green.jpg",
       },
       {
         _id: new ObjectId(),
         nombre: "Tokyo Sushi",
-        categoría: "Sushi",
-        ubicación: "Calle 8 #11-30",
+        categoria: "Sushi",
+        ubicacion: "Calle 8 #11-30",
         imagen: "https://example.com/sushi.jpg",
       },
     ];
@@ -70,7 +70,7 @@ async function seedData() {
       {
         restauranteId: restaurantes[0]._id,
         usuarioId: usuarios[1]._id,
-        calificación: 5,
+        calificacion: 5,
         comentario: "Las hamburguesas son espectaculares 😋",
         likes: 15,
         dislikes: 2,
@@ -79,7 +79,7 @@ async function seedData() {
       {
         restauranteId: restaurantes[0]._id,
         usuarioId: usuarios[2]._id,
-        calificación: 4,
+        calificacion: 4,
         comentario: "Buena atención, pero algo demorado.",
         likes: 8,
         dislikes: 1,
@@ -88,7 +88,7 @@ async function seedData() {
       {
         restauranteId: restaurantes[1]._id,
         usuarioId: usuarios[1]._id,
-        calificación: 5,
+        calificacion: 5,
         comentario: "Excelente experiencia, comida deliciosa y elegante 🍷",
         likes: 20,
         dislikes: 0,
@@ -97,7 +97,7 @@ async function seedData() {
       {
         restauranteId: restaurantes[2]._id,
         usuarioId: usuarios[2]._id,
-        calificación: 3,
+        calificacion: 3,
         comentario: "Comida saludable, pero porciones pequeñas.",
         likes: 4,
         dislikes: 5,
@@ -106,7 +106,7 @@ async function seedData() {
       {
         restauranteId: restaurantes[3]._id,
         usuarioId: usuarios[1]._id,
-        calificación: 4,
+        calificacion: 4,
         comentario: "Sushi fresco y de buen sabor 🍣",
         likes: 10,
         dislikes: 1,

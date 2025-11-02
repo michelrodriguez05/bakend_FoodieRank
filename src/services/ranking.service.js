@@ -44,7 +44,7 @@ export async function calcularRanking({ top = 10 } = {}) {
       $addFields: {
         // edad promedio en días
         edad_promedio_dias: {
-          $divide: [{ $subtract: [now, "$avg_fecha"] }, 1000 * 60 * 60 * 24],
+          $divide: [{ $subtract: [ahora, "$avg_fecha"] }, 1000 * 60 * 60 * 24],
         },
       },
     },
@@ -70,7 +70,7 @@ export async function calcularRanking({ top = 10 } = {}) {
         edad_promedio_dias: 1,
         // recencyScore = 1 / (1 + edad_promedio_dias) -> entre 0..1, mayor si es reciente
         recencyScore: {
-          $divide: [1, { $add: [1, { $cond: [{ $lt: ["$edad_promedio_dias", 0] }, 0, "$edad_promedio_dias"] }] }],
+          $divide: [1, { $add: [1, { $max: [0, "$edad_promedio_dias"] }] }],
         },
       },
     },
@@ -145,7 +145,7 @@ export async function calcularRankingPorRestaurante(restauranteId) {
         suma_dislikes: 1,
         edad_promedio_dias: 1,
         recencyScore: {
-          $divide: [1, { $add: [1, { $cond: [{ $lt: ["$edad_promedio_dias", 0] }, 0, "$edad_promedio_dias"] }] }],
+          $divide: [1, { $add: [1, { $max: [0, "$edad_promedio_dias"] }] }],
         },
       },
     },

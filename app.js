@@ -27,7 +27,7 @@ passport.use(estrategiaJwt);
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Registrar todas las rutas
-app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use(`/api/${API_VERSION}/usuarios`, usuarioRoutes);
 app.use(`/api/${API_VERSION}/categorias`, categoriaRoutes);
 app.use(`/api/${API_VERSION}/restaurantes`, restauranteRoutes);

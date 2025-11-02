@@ -8,7 +8,7 @@ import {
   aprobarRestaurante_controller,
 } from "../controllers/restaurante.controller.js";
 import { verificarToken, soloAdmin } from "../middlewares/auth.middleware.js";
-import { validarRestaurante } from "../validaciones/restaurante.validacion.js";
+import { validarRestaurante } from "../validation/restaurante.validacion.js";
 
 const router = Router();
 

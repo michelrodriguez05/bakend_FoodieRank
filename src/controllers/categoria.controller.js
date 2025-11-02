@@ -4,7 +4,7 @@ import {
     crearCategoria,
     actualizarCategoria,
     eliminarCategoria,
-  } from "../services/catergoria.service.js";
+  } from "../services/categoria.service.js";
   
   export async function getCategorias_controller(req, res) {
     try {
