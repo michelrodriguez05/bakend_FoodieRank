@@ -8,6 +8,12 @@ const router = Router();
 router.post(
   "/register",
   [
+    // Middleware temporal para depuración: Muestra el body de la petición en la consola del backend.
+    (req, res, next) => {
+      console.log("Petición a /register recibida con el siguiente body:");
+      console.log(req.body);
+      next();
+    },
     body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
     body("email").isEmail().withMessage("Debe ser un email válido"),
     body("password").isLength({ min: 6 }).withMessage("Mínimo 6 caracteres"),
