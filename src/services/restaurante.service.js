@@ -51,3 +51,9 @@ export async function aprobarRestaurante(id) {
   await db.collection(COLLECTION_RESTAURANTE).updateOne({ _id: new ObjectId(id) }, { $set: { aprobado: true } });
   return { mensaje: "Restaurante aprobado correctamente" };
 }
+
+export async function listarTodosRestaurantes() {
+  const db = getDB();
+  const restaurantes = await db.collection(COLLECTION_RESTAURANTE).find({}).toArray();
+  return restaurantes;
+}

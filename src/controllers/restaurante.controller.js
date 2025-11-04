@@ -5,6 +5,7 @@ import {
     actualizarRestaurante,
     eliminarRestaurante,
     aprobarRestaurante,
+    listarTodosRestaurantes,
   } from "../services/restaurante.service.js";
   
   export async function crearRestaurante_controller(req, res) {
@@ -60,4 +61,13 @@ import {
       res.status(400).json({ error: error.message });
     }
   }
+
+export async function listarTodosRestaurantes_controller(req, res) {
+  try {
+    const resultado = await listarTodosRestaurantes();
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
   

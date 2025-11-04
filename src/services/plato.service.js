@@ -36,3 +36,33 @@ export async function eliminarPlato(id) {
   await db.collection(COLLECTION_PLATO).deleteOne({ _id: new ObjectId(id) });
   return { mensaje: "Plato eliminado correctamente" };
 }
+
+// ... al final del archivo ...
+export async function listarTodosPlatos() {
+  const db = getDB();
+  // Usamos $lookup para añadir el nombre del restaurante a cada plato
+  const pipeline = [
+    {
+      $lookup: {
+        from: "restaurantes", // La colección de restaurantes
+        localField: "restauranteId", // El campo en 'platos'
+        foreignField: "_id",       // El campo en 'restaurantes'
+        as: "restauranteInfo"      // Nombre del nuevo array
+      }
+    },
+    {
+      $unwind: "$restauranteInfo" // Descomprime el array
+    },
+    {
+      $project: {
+        _id: 1,
+        nombre: 1,
+        precio: 1,
+        restauranteId: 1,
+        restauranteNombre: "$restauranteInfo.nombre" // Obtenemos el nombre
+      }
+    }
+  ];
+  const platos = await db.collection(COLLECTION_PLATO).aggregate(pipeline).toArray();
+  return platos;
+}

@@ -4,7 +4,7 @@ import {
   reaccionarReseña,
   actualizarReseña,
   eliminarReseña,
-} from "../services/reseña.service.js";
+} from "../services/resena.service.js";
 
 export async function crearReseña_controller(req, res) {
   try {

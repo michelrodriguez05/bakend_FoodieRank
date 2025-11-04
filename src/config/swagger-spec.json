@@ -1,0 +1,380 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API FoodieRank",
+    "version": "1.0.0",
+    "description": "Documentación de la API de FoodieRank para el registro y ranking de restaurantes."
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Pega aquí tu Token JWT (obtenido en el login)"
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Registrar un nuevo usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string", "example": "Juan Pérez" },
+                  "email": { "type": "string", "example": "juan@example.com" },
+                  "password": { "type": "string", "example": "password123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuario registrado" },
+          "409": { "description": "El correo ya está registrado" }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "admin@foodie.com" },
+                  "password": { "type": "string", "example": "admin123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Inicio de sesión exitoso" },
+          "401": { "description": "Credenciales inválidas" }
+        }
+      }
+    },
+    "/api/v1/restaurantes": {
+      "get": {
+        "tags": ["Restaurantes"],
+        "summary": "Listar restaurantes aprobados",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "categoria",
+            "schema": { "type": "string" },
+            "description": "(Opcional) Filtra por categoría"
+          }
+        ],
+        "responses": { "200": { "description": "Lista de restaurantes" } }
+      },
+      "post": {
+        "tags": ["Restaurantes"],
+        "summary": "Crear un restaurante (pendiente de aprobación)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string", "example": "La Pizzería" },
+                  "descripcion": { "type": "string" },
+                  "categoria": { "type": "string", "example": "Italiana" },
+                  "ubicacion": { "type": "string", "example": "Calle 123" },
+                  "imagen": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Restaurante creado" } }
+      }
+    },
+    "/api/v1/restaurantes/admin/todos": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Listar TODOS los restaurantes",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de todos los restaurantes" },
+          "403": { "description": "Acceso denegado" }
+        }
+      }
+    },
+    "/api/v1/restaurantes/aprobar/{id}": {
+      "put": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Aprobar un restaurante",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Restaurante aprobado" },
+          "403": { "description": "Acceso denegado" }
+        }
+      }
+    },
+    "/api/v1/restaurantes/{id}": {
+      "get": {
+        "tags": ["Restaurantes"],
+        "summary": "Obtener detalle de un restaurante",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Detalle del restaurante" } }
+      },
+      "put": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Actualizar un restaurante",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": { "200": { "description": "Restaurante actualizado" } }
+      },
+      "delete": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Eliminar un restaurante",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Restaurante eliminado" } }
+      }
+    },
+    "/api/v1/categorias": {
+      "get": {
+        "tags": ["Categorías"],
+        "summary": "Listar todas las categorías",
+        "responses": { "200": { "description": "Lista de categorías" } }
+      },
+      "post": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Crear una nueva categoría",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string", "example": "Mexicana" },
+                  "descripcion": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Categoría creada" } }
+      }
+    },
+    "/api/v1/categorias/{id}": {
+      "get": {
+        "tags": ["Categorías"],
+        "summary": "Obtener una categoría por ID",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Detalle de la categoría" } }
+      },
+      "put": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Actualizar una categoría",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": { "200": { "description": "Categoría actualizada" } }
+      },
+      "delete": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Eliminar una categoría",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Categoría eliminada" } }
+      }
+    },
+    "/api/v1/platos/{restauranteId}": {
+      "get": {
+        "tags": ["Platos"],
+        "summary": "Listar platos de un restaurante",
+        "parameters": [
+          { "in": "path", "name": "restauranteId", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Lista de platos" } }
+      }
+    },
+    "/api/v1/platos": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Crear un nuevo plato",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "precio": { "type": "number" },
+                  "restauranteId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Plato creado" } }
+      }
+    },
+    "/api/v1/platos/{id}": {
+      "put": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Actualizar un plato",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Plato actualizado" } }
+      },
+      "delete": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Eliminar un plato",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Plato eliminado" } }
+      }
+    },
+    "/api/v1/reseñas": {
+      "post": {
+        "tags": ["Reseñas"],
+        "summary": "Crear una nueva reseña",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "comentario": { "type": "string" },
+                  "calificacion": { "type": "number", "example": 5 },
+                  "restauranteId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Reseña creada" } }
+      }
+    },
+    "/api/v1/reseñas/{restauranteId}": {
+      "get": {
+        "tags": ["Reseñas"],
+        "summary": "Listar reseñas de un restaurante",
+        "parameters": [
+          { "in": "path", "name": "restauranteId", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Lista de reseñas" } }
+      }
+    },
+    "/api/v1/reseñas/reaccion/{id}/{tipo}": {
+      "put": {
+        "tags": ["Reseñas"],
+        "summary": "Dar 'like' o 'dislike' a una reseña",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } },
+          { "in": "path", "name": "tipo", "required": true, "schema": { "type": "string", "enum": ["like", "dislike"] } }
+        ],
+        "responses": { "200": { "description": "Reacción registrada" } }
+      }
+    },
+    "/api/v1/reseñas/{id}": {
+      "put": {
+        "tags": ["Reseñas"],
+        "summary": "Actualizar una reseña propia",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Reseña actualizada" } }
+      },
+      "delete": {
+        "tags": ["Reseñas"],
+        "summary": "Eliminar una reseña propia",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Reseña eliminada" } }
+      }
+    },
+    "/api/v1/ranking": {
+      "get": {
+        "tags": ["Ranking"],
+        "summary": "Obtener el ranking general",
+        "parameters": [
+          { "in": "query", "name": "top", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Lista del ranking" } }
+      }
+    },
+    "/api/v1/ranking/{id}": {
+      "get": {
+        "tags": ["Ranking"],
+        "summary": "Obtener el score de un restaurante",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Score del restaurante" } }
+      }
+    },
+    "/api/v1/usuarios": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "(Admin) Listar todos los usuarios",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de usuarios" } }
+      }
+    },
+    "/api/v1/usuarios/{id}": {
+      "get": {
+        "tags": ["Usuarios"],
+        "summary": "Obtener perfil de usuario",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Datos del usuario" } }
+      }
+    }
+  }
+}

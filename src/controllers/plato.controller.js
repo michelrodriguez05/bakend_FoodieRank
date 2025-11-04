@@ -3,6 +3,7 @@ import {
   listarPlatosPorRestaurante,
   eliminarPlato,
   actualizarPlato,
+  listarTodosPlatos,
 } from "../services/plato.service.js";
 
 export async function crearPlato_controller(req, res) {
@@ -38,5 +39,14 @@ export async function eliminarPlato_controller(req, res) {
     res.status(200).json(resultado);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+}
+
+export async function listarTodosPlatos_controller(req, res) {
+  try {
+    const resultado = await listarTodosPlatos();
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }

@@ -1,24 +1,12 @@
 import { getDB } from "../config/db.config.js";
 import { ObjectId } from "mongodb";
 
-/**
- * Pesos configurables (ajústalos según necesidad)
- */
 const W_PROMEDIO = 0.7;
 const W_LIKES = 0.2;
 const W_RECENCY = 0.1;
 
-/**
- * Devuelve ranking ordenado por score descendente.
- * Opciones: { top: Number } - si top definido, devuelve top N.
- */
 export async function calcularRanking({ top = 10 } = {}) {
   const db = getDB();
-
-  // Aggregation:
-  // 1) Agrupar reseñas por restaurante: avg calificacion, total reseñas, suma de likes, suma de dislikes, avg edad (en días)
-  // 2) Lookup restaurante para obtener nombre, ubicacion, categoria
-  // 3) Calcular score según pesos
   const ahora = new Date();
 
   const pipeline = [
@@ -27,9 +15,8 @@ export async function calcularRanking({ top = 10 } = {}) {
         _id: "$restauranteId",
         promedio_calificacion: { $avg: "$calificacion" },
         total_reseñas: { $sum: 1 },
-        suma_likes: { $sum: "$likes" },
-        suma_dislikes: { $sum: "$dislikes" },
-        // calcular edad promedio en días: promedio de (ahora - fecha)/msPorDia
+        suma_likes: { $sum: { $size: { $ifNull: ["$likedBy", []] } } },
+        suma_dislikes: { $sum: { $size: { $ifNull: ["$dislikedBy", []] } } },
         avg_fecha: { $avg: "$fecha" },
       },
     },
@@ -42,7 +29,6 @@ export async function calcularRanking({ top = 10 } = {}) {
     },
     {
       $addFields: {
-        // edad promedio en días
         edad_promedio_dias: {
           $divide: [{ $subtract: [ahora, "$avg_fecha"] }, 1000 * 60 * 60 * 24],
         },
@@ -57,6 +43,7 @@ export async function calcularRanking({ top = 10 } = {}) {
       },
     },
     { $unwind: "$restaurante" },
+    { $match: { "restaurante.aprobado": true } },
     {
       $project: {
         restauranteId: "$_id",
@@ -68,7 +55,6 @@ export async function calcularRanking({ top = 10 } = {}) {
         suma_likes: 1,
         suma_dislikes: 1,
         edad_promedio_dias: 1,
-        // recencyScore = 1 / (1 + edad_promedio_dias) -> entre 0..1, mayor si es reciente
         recencyScore: {
           $divide: [1, { $add: [1, { $max: [0, "$edad_promedio_dias"] }] }],
         },
@@ -108,9 +94,6 @@ export async function calcularRanking({ top = 10 } = {}) {
   return resultado;
 }
 
-/**
- * Opción: calcular ranking para 1 restaurante
- */
 export async function calcularRankingPorRestaurante(restauranteId) {
   const db = getDB();
   const pipeline = [
@@ -120,8 +103,8 @@ export async function calcularRankingPorRestaurante(restauranteId) {
         _id: "$restauranteId",
         promedio_calificacion: { $avg: "$calificacion" },
         total_reseñas: { $sum: 1 },
-        suma_likes: { $sum: "$likes" },
-        suma_dislikes: { $sum: "$dislikes" },
+        suma_likes: { $sum: { $size: { $ifNull: ["$likedBy", []] } } },
+        suma_dislikes: { $sum: { $size: { $ifNull: ["$dislikedBy", []] } } },
         avg_fecha: { $avg: "$fecha" },
       },
     },
