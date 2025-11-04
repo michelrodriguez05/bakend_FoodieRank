@@ -95,7 +95,7 @@ async function seedData() {
         descripcion: "Opciones saludables y vegetarianas.",
         categoria: categorias[2].nombre, // Vegetariana
         ubicacion: "Av. Los Alpes #22-44",
-        imagen: "https://images.unsplash.com/photo-1490645935967-10de6ba1a033?q=80&w=2070&auto=format&fit=crop",
+        imagen: "https://www.recetasnestlecam.com/sites/default/files/2022-10/comidas-vegetarianas-cena.jpg_2.jpg",
         aprobado: true, // Aprobado
         creadoEn: new Date()
       },
@@ -106,9 +106,19 @@ async function seedData() {
         categoria: categorias[4].nombre, // Italiana
         ubicacion: "Calle 5 #15-30",
         imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop",
-        aprobado: false, // PENDIENTE DE APROBACIÓN (para probar el admin)
+        aprobado: true, // Aprobado
         creadoEn: new Date()
       },
+      {
+        _id: new ObjectId(),
+        nombre: "Camachos",
+        descripcion: "las Hamaburguesas mas chimbas .",
+        categoria: categorias[4].nombre, // Italiana
+        ubicacion: "Calle 5 #45-30",
+        imagen: "https://grupocamachos.com/menu/wp-content/uploads/2025/07/Breve.jpg",
+        aprobado: true, // Aprobado
+        creadoEn: new Date()
+      }
     ];
     await db.collection("restaurantes").insertMany(restaurantes);
     console.log("🍽️ Restaurantes insertados (3 aprobados, 1 pendiente)");
