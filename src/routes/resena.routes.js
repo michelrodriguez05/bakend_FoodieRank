@@ -131,5 +131,5 @@ router.get("/:restauranteId", listarReseñas_controller);
 router.put("/reaccion/:id/:tipo", verificarToken, reaccionarReseña_controller);
 router.put("/:id", verificarToken, validarReseña, actualizarReseña_controller);
 router.delete("/:id", verificarToken, eliminarReseña_controller);
-
+router.put("/:notificaciones/:id/vista")
 export default router;

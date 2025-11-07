@@ -43,5 +43,6 @@ const router = Router();
  */
 router.get("/", passport.authenticate('jwt', { session: false }), soloAdmin, getUsuarios_controller);
 router.get("/:id", passport.authenticate('jwt', { session: false }), getUsuario_controller);
-
+router.get("/notificacion/:usuario", NotificationReseña_controller);
+router.put("/notificaciones/:id/vista",)
 export default router;

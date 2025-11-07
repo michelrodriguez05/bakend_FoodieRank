@@ -133,3 +133,9 @@ export async function eliminarReseña(id, usuarioId) {
   if (resultado.deletedCount === 0) throw new Error("Reseña no encontrada para eliminar");
   return { mensaje: "Reseña eliminada correctamente" };
 }
+export async function NotificationReseña(id, usuarioId) {
+  const db = getDB();
+  const reseñaId = new ObjectId(id);
+  const userId = new ObjectId(usuarioId); // Asegurarse que el ID de usuario sea ObjectId
+
+  const reseña = await db.collection(COLLECTION_RESEÑA).findOne({ _id: reseñaId });}

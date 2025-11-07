@@ -58,3 +58,11 @@ export async function reaccionarReseña_controller(req, res) {
     res.status(400).json({ error: error.message });
   }
 }
+export async function NotificationReseña_controller(req, res) {
+  try {
+    const resultado = await NotificationReseña(req.params.id, req.resena.id);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}

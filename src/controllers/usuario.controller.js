@@ -26,3 +26,4 @@ export async function getUsuario_controller(req, res, next) {
         next(error);
     }
 }
+
